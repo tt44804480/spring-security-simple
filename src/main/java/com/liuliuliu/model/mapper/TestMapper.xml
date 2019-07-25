@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.liuliuliu.model.dao.TestDao">
+
+    <resultMap id="base_student" type="com.liuliuliu.model.entity.Student">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="age" column="age"></result>
+    </resultMap>
+
+    <resultMap id="base_user" type="com.liuliuliu.security.userdetails.MyUserDetailsDao">
+        <id property="id" column="id"></id>
+        <result property="username" column="username"></result>
+        <result property="password" column="password"></result>
+        <result property="accountNonExpired" column="account_non_expired"></result>
+        <result property="accountNonLocked" column="account_non_locked"></result>
+        <result property="enabled" column="enabled"></result>
+        <result property="realname" column="realname"></result>
+        <result property="age" column="age"></result>
+        <result property="mobile" column="mobile"></result>
+    </resultMap>
+
+    <sql id="student_sql">
+        name, age
+    </sql>
+
+    <sql id="user_sql">
+        username, password,account_non_expired,account_non_locked,enabled,realname,age,mobile
+    </sql>
+    
+    <select id="queryStudent" parameterType="com.liuliuliu.model.entity.Student" resultMap="base_student">
+        select id,
+          <include refid="student_sql"></include>
+        from student
+        <where>
+            <if test="id != null ">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="age != null">
+                and age = #{age}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryUserDetailsByUsername" parameterType="string" resultMap="base_user">
+        select id,
+          <include refid="user_sql"></include>
+        from `user`
+        where username = #{username}
+    </select>
+
+    <select id="queryUserDetailsByMobile" parameterType="string" resultMap="base_user">
+        select id,
+        <include refid="user_sql"></include>
+        from `user`
+        where mobile = #{mobile}
+    </select>
+
+    <insert id="insertUser" parameterType="com.liuliuliu.security.userdetails.MyUserDetailsDao">
+        insert into `user`
+        (<include refid="user_sql"></include>)
+        VALUE (#{username},#{password},#{accountNonExpired},#{accountNonLocked},#{enabled},#{realname},#{age},#{mobile})
+    </insert>
+
+</mapper>
